@@ -1,0 +1,5 @@
+brand,capacity,fuel_consumption
+"Scania",5,23.70
+"Scania 2",15,23.70
+"Mercedes",10,29.00
+"Mercedes",20,29.00

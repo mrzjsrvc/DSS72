@@ -1,0 +1,6 @@
+name,latitude,longitude,demand
+"Karlshamn",56.170077,14.860849,0
+"Sölvesborg",56.052109,14.584848,10
+"Olofström",56.276964,14.530781,15
+"Ronneby",56.210057,15.276961,20
+"Karlskrona",56.161735,15.585788,25

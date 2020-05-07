@@ -1,0 +1,5 @@
+name,minutes
+"loading_time",10
+"unloading_time",10
+"resting_time",120
+"total_work_time",600
