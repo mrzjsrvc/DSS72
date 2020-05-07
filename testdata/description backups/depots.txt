@@ -1,0 +1,11 @@
+ObjectID			- int
+Name			- str
+Description		- null
+TimeWindowStart1		- null
+TimeWindowEnd1		- null
+TimeWindowStart2		- null
+TimeWindowEnd2		- null
+CurbApproach		- "No U-Turn"
+Bearing			- null
+BearingTol		- null
+NavLatency		- null

@@ -1,0 +1,20 @@
+Name			- str(unique)
+StartDepotName		- str null name of starting depot(Karlshamn), can be left empty
+EndDepotName		- str null name of ending depot(Karlshamn)
+StartDepotServiceTime	- int loading time
+EndDepotServiceTime	- int unloading time
+EarliestStartTime		- can't be null, default 8:00 AM, this is when trucks can start using the route
+LatestStartTime		- can't be null, default 10:00 AM, this is the latest time trucks are allowed to (start to)use the route
+ArriveDepartDelay		- int minutes break time after delivery, how long the driver waits before leaving after unloading
+Capacities		- int tons of goods truck can carry
+FixedCost			- int null how much it costs for a truck to go this route
+CostPerUnitTime		- int can't be null, default is 1.0, this is how much each minute of service(driving, unloading, waiting etc., all work) costs
+CostPerUnitDistance	- int can be null, this is cost per kilometer travelled(this is where we set fuel price for the truck)
+OvertimeStartTime		- int can be null(but shouldn't), this is where we put the total work time of the trucker in minutes(10 hrs x 60 min = 600 min)
+CostPerUnitOvertime	- int can be null, how much the trucker is paid for each minute of overtime
+MaxOrderCount		- int can't be null, how many orders the truck is allowed to send(default is 30)
+MaxTotalTime		- int can be null( = no constraint), this says how long the truck is allowed to travel to a destination, load, unload, wait etc. in total
+MaxTotalTravelTime	- int can be null( = no constraint), this is same as above, but without waiting, loading/unloading times
+MaxTotalDistance		- int can be null( = no constraint), says how far the truck is allowed to go max in total
+SpecialtyNames		- str can be null, this says if there are special things for the truck to consider, but we will set null
+AssignmentRule		- int can't be null?, this says if the truck should be used for transport or not(1 = yes, 2 = no, 1 is default)

@@ -1,10 +1,15 @@
+import os
 import arcgis.gis
 import pandas as pd
 import arcgis.features as fts
 import arcgis.network as ntw
 from arcgis.gis import GIS
 
-usr, pwd, url = (open("key.txt", "r").read()).split(",", 2)
+# For the key; make a key.txt file in the parent directory, then fill it in with this format:
+# "user,password,arcgis url", example: "david27,peppermint,http://david27.maps.arcgis.com/"
+key_path = os.path.dirname(os.getcwd()) + "\\key.txt"
+print(key_path)
+usr, pwd, url = (open(key_path, "r").read()).split(",", 2)
 gis_t = GIS("https://www.arcgis.com", username=usr, password=pwd)#username="someuser", password="secret1234")
 dir = "./testdata/"
 

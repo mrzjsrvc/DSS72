@@ -1,0 +1,26 @@
+ObjectID 			- int
+Name			- (string: name of location + index of order from this place)
+Description 		- null(string: address maybe? anything really)
+ServiceTime		- int? or string? how long it takes to unload
+TimeWindowStart1		- null (when it should start)
+TimeWindowEnd1		- null (when it should end max)
+TimeWindowStart2		- null (if all trucks occupied; when it can start next)
+TimeWindowEnd2		- null (if all trucks occupied; when can it end next)
+MaxViolationTime1		- null int? how long delivery can be delayed
+MaxViolationTime2		- null int? how long delivery can be delayed
+InboundArriveTime		- start time of day - what time the delivery will be ready to be shipped
+OutboundDepartTime	- end time of day - what time the delivery must arrive
+DeliveryQuantities		- int how much needs to be delivered
+PickupQuantities		- int how much can be picked up
+Revenue			- int null how much will be earned if this order is completed
+SpecialtyNames		- string(spec) null if the truck needs to carry some extra equipment, you write what it needs
+AssignmentRule		- int(1,2,3,4,5) 3
+	1 = if you have orders A & B, orders can be put before or after them, but A will always go before B
+	2 = 
+	3 = always tries to minimize cost by rearranging orders as it solves them
+CurbApproach 		- "No U-Turn"
+RouteName 		- string null if you want the trucks to go through a particular route, you set the route's name here
+Sequence			- int null decide in which max sequence this order should be taken care of when a truck is on route(if a truck has 3 orders on one road, does this order have to be delivered to first(1) or second(2) at most, or is any okay(null)?)
+Bearing			- null which way to orient the truck if delivering to moving target
+BearingTol		- null which degree of offset for delivery to moving target
+NavLatency		- null something to be set when bearing is set

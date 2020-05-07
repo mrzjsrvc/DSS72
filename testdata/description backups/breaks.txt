@@ -1,0 +1,12 @@
+RouteName			- str can't be null name of route this break applies to
+Precedece				- int can't be null this is which order the breaks are taken in(so break with Precedence 1 is taken before the one with Prec. 2)
+ServiceTime			- int can be null this says how long the break lasts
+TimeWindowStart			- ??? can be null, when the break starts, MaxTravelTimeBetweenBreaks & MaxCumulWorkTime must be null if this is not null
+TimeWindowEnd			- ??? can be null, when the break ends, same conditions as above
+MaxViolationTime			- int can be null, if a vehicle arrives late, here you set how many minutes the break can also be delayed(if truck is 20 min late and you put 10 min here, if break was originally 20 min planned, it will be 10 after this)
+MaxTravelTimeBetweenBreaks	- int can be null how many minutes need to be travelled before this break is taken - if this is not null, then TimeWindowStart, TimeWindowEnd, MaxViolationTime, and MaxCumulWorkTime must be null
+MaxCumulWorkTime		- int can be null, amount of work time(load time, travel time etc. in total) to pass before the break is taken
+IsPaid				- boolean, true = break is paid, false = break is unpaid
+Sequence				- int can be null, also says in which order breaks are taken? weird, idk what the difference between this and Precedence is
+ArriveTimeUTC			- ??? can be null? expected arrival time in UTC time
+DepartTimeUTC			- ??? can be null? expected departure time in UTC time

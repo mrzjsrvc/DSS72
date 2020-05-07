@@ -1,0 +1,2 @@
+ObjectID,Name,CurbApproach
+1,Karlshamn,"No U-Turn"

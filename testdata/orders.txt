@@ -1,0 +1,4 @@
+ObjectID,Name,ServiceTime,DeliveryQuantities,Revenue,AssignmentRule,CurbApproach
+1,Ronneby1,10,22,0,3,"No U-Turn"
+2,Olofstrom2,10,14,0,3,"No U-Turn"
+3,Karlskrona3,10,37,0,3,"No U-Turn"
