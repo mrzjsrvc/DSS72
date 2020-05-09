@@ -19,7 +19,6 @@ def create_data():
                         "Karlskronagatan+11+372+30+Ronneby",
                         "Norra+Kungsgatan+8+371+33+Karlskrona"
                       ]
-  print("create_data\n",data,"\n")
   return data
 
 def create_distance_matrix(data):
@@ -34,19 +33,24 @@ def create_distance_matrix(data):
   q, r = divmod(num_addresses, max_rows)
   dest_addresses = addresses
   distance_matrix = []
+  time_matrix = []
   # Send q requests, returning max_rows rows per request.
   for i in range(q):
     origin_addresses = addresses[i * max_rows: (i + 1) * max_rows]
     response = send_request(origin_addresses, dest_addresses, API_key)
-    distance_matrix += build_distance_matrix(response)
+    add_distance_matrix, add_time_matrix = build_distance_matrix(response)
+    distance_matrix += add_distance_matrix
+    time_matrix += add_time_matrix
 
   # Get the remaining remaining r rows, if necessary.
   if r > 0:
     origin_addresses = addresses[q * max_rows: q * max_rows + r]
     response = send_request(origin_addresses, dest_addresses, API_key)
-    distance_matrix += build_distance_matrix(response)
-    print("create_distance_matrix\n",distance_matrix,"\n")
-  return distance_matrix
+    add_distance_matrix, add_time_matrix = build_distance_matrix(response)
+    distance_matrix += add_distance_matrix
+    time_matrix += add_time_matrix
+    #print("create_distance_matrix & time_matrix\n",distance_matrix,"\n",time_matrix)
+  return distance_matrix, time_matrix
 
 def send_request(origin_addresses, dest_addresses, API_key):
   """ Build and send request for the given origin and destination addresses."""
@@ -56,7 +60,6 @@ def send_request(origin_addresses, dest_addresses, API_key):
     for i in range(len(addresses) - 1):
       address_str += addresses[i] + '|'
     address_str += addresses[-1]
-    print("build_address_str\n",address_str,"\n")
     return address_str
 
   request = 'https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial'
@@ -66,16 +69,18 @@ def send_request(origin_addresses, dest_addresses, API_key):
                        dest_address_str + '&key=' + API_key
   jsonResult = urllib.request.urlopen(request).read()
   response = json.loads(jsonResult)
-  print("send_request\n",response,"\n")
   return response
 
 def build_distance_matrix(response):
   distance_matrix = []
+  time_matrix = []
   for row in response['rows']:
     row_list = [row['elements'][j]['distance']['value'] for j in range(len(row['elements']))]
     distance_matrix.append(row_list)
-  print("build_distance_matrix:\n",distance_matrix,"\n")
-  return distance_matrix
+    row_list_time = [row['elements'][j]['duration']['value'] for j in range(len(row['elements']))]
+    time_matrix.append(row_list_time)
+
+  return distance_matrix, time_matrix
 
 ########
 # Main #
@@ -86,7 +91,8 @@ def main():
   data = create_data()
   addresses = data['addresses']
   API_key = data['API_key']
-  distance_matrix = create_distance_matrix(data)
-  print(distance_matrix)
+  distance_matrix, time_matrix = create_distance_matrix(data)
+  print("distance_matrix:\n",distance_matrix)
+  print("time_matrix:\n",time_matrix)
 if __name__ == '__main__':
   main()

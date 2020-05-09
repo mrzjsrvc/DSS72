@@ -4,6 +4,8 @@ from __future__ import print_function
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
 
+loading_time = 10
+break_time = 10
 
 def create_data_model():
     """Stores the data for the problem."""
@@ -55,6 +57,7 @@ def main():
     manager = pywrapcp.RoutingIndexManager(len(data['distance_matrix']),data['num_vehicles'], data['depot'])
     routing = pywrapcp.RoutingModel(manager)
 
+    #print("data: ",data)
     # ========================================================================
 
     def distance_callback(from_index, to_index):
@@ -74,11 +77,21 @@ def main():
     demand_callback_index = routing.RegisterUnaryTransitCallback(demand_callback)
     routing.AddDimensionWithVehicleCapacity(demand_callback_index, 0, data['vehicle_capacities'], True, 'Capacity')
 
+
+    # def loading_callback():
+    #     return loading_time
+    #
+    # loading_callback_index = routing.RegisterTransitCallback(demand_callback)
+    # routing.AddDimension(loading_callback_index, break_time, , False, "LoadTime")
+
     # ========================================================================
 
     search_parameters = pywrapcp.DefaultRoutingSearchParameters()
+    #print("search_parameters: ",search_parameters)
     search_parameters.first_solution_strategy = (routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC)
+
     solution = routing.SolveWithParameters(search_parameters)
+    print(routing.SolveWithParameters(search_parameters))
 
     if solution:
         print_solution(data, manager, routing, solution)
