@@ -61,7 +61,6 @@ def main():
 
         from_node = manager.IndexToNode(from_index)
         to_node = manager.IndexToNode(to_index)
-        print("distance_callback: ",data['distance_matrix'][from_node][to_node])
         return data['distance_matrix'][from_node][to_node]
 
     transit_callback_index = routing.RegisterTransitCallback(distance_callback)
@@ -70,7 +69,6 @@ def main():
     def demand_callback(from_index):
 
         from_node = manager.IndexToNode(from_index)
-        print("demand_callback: ",data['demands'][from_node])
         return data['demands'][from_node]
 
     demand_callback_index = routing.RegisterUnaryTransitCallback(demand_callback)
