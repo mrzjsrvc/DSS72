@@ -1,0 +1,3 @@
+ObjectID,Name,Description,ServiceTime,TimeWindowStart1,TimeWindowEnd1,TimeWindowStart2,TimeWindowEnd2,MaxViolationTime1,MaxViolationTime2,InboundArriveTime,OutboundDepartTime,DeliveryQuantities,PickupQuantities,Revenue,SpecialityNames,AssignmentRule,CurbApproach,RouteName,Sequence,Bearing,BearingTol,NavLatency
+1,Ronneby1,,10,,,,,,,,,22,,0,,3,"No U-Turn",,,,,,
+2,Olofstrom2,10,,,,,,,,,14,,0,,3,"No U-Turn",,,,,,

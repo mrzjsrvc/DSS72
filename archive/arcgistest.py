@@ -5,6 +5,13 @@ import arcgis.features as fts
 import arcgis.network as ntw
 from arcgis.gis import GIS
 
+from arcgis import geometry
+from arcgis import features
+
+# arcgis.features.FeatureSet(features, fields=None, has_z=False, has_m=False, geometry_type=None, spatial_reference=None,
+# display_field_name=None, object_id_field_name=None, global_id_field_name=None)
+
+
 # For the key; make a key.txt file in the parent directory, then fill it in with this format:
 # "user,password,arcgis url", example: "david27,peppermint,http://david27.maps.arcgis.com/"
 key_path = os.path.dirname(os.getcwd()) + "\\key.txt"
@@ -25,4 +32,6 @@ bfs = None # FeatureSet.from_dataframe(df_breaks)
 
 result = ntw.analysis.solve_vehicle_routing_problem(orders=ofs, depots=dfs, routes=rfs, breaks=bfs, time_units='Minutes', distance_units='Kilometers', analysis_region='Europe', default_date=None, uturn_policy='ALLOW_DEAD_ENDS_ONLY', time_window_factor='High', spatially_cluster_routes=True, route_zones=None, route_renewals=None, order_pairs=None, excess_transit_factor='Medium', point_barriers=None, line_barriers=None, polygon_barriers=None, use_hierarchy_in_analysis=True, restrictions=None, attribute_parameter_values=None, populate_route_lines=True, route_line_simplification_tolerance=None, populate_directions=True, directions_language='en', directions_style_name='NA Desktop', travel_mode='Custom', impedance='Truck Time', gis=gis_t, time_zone_usage_for_time_fields='GEO_LOCAL', save_output_layer=False, overrides=None, save_route_data=False, time_impedance=None, distance_impedance=None, populate_stop_shapes=False, output_format=None, future=False)
 
-print(result)
+
+ofs.save("./", "framecontent.txt")
+#print(result)

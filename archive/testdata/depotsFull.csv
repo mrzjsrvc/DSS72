@@ -1,0 +1,2 @@
+ObjectID,Name,Description,TimeWindowStart1,TimeWindowEnd1,TimeWindowStart2,TimeWindowEnd2,CurbApproach,Bearing,BearingTol,NavLatency
+1,Karlshamn,,,,,,"No U-Turn",,,

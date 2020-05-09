@@ -1,0 +1,3 @@
+Name,Precedence,StartDepotName,EndDepotName,StartDepotServiceTime,EndDepotServiceTime,EarliestStartTime,LatestStartTime,ArriveDepartDelay,Capacities,FixedCost,CostPerUnitTime,CostPerUnitDistance,OvertimeStartTime,CostPerUnitOvertime,MaxOrderCount,MaxTotalTime,MaxTotalTravelTime,MaxTotalDistance,SpecialityNames,AssignmentRule
+MercedesLarge,1,Karlshamn,Karlshamn,10,10,,,10,20,,1,27,600,,30,,,,,1
+ScaniaSmall,2,Karlshamn,Karlshamn,10,10,10,15,1,26,600,30,1
