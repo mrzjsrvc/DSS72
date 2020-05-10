@@ -8,7 +8,7 @@ import numpy as np
 
 # Takes data as Nx2 matrix & array of acceptable group sizes to test(must be <= to N in matrix)
 # Returns best group size, and the assignment of the points to the groups as array
-def get_groups(X=np.array(data), range_n_clusters=[2, 3, 4]):
+def get_groups(X, range_n_clusters=[2, 3, 4]):
 
     best_score = 0
     best_score_group_amount = range_n_clusters[0]
@@ -27,4 +27,4 @@ def get_groups(X=np.array(data), range_n_clusters=[2, 3, 4]):
             best_score_group_amount = n_clusters
             best_assignment = cluster_labels
 
-    return [best_assignment.tolist(), best_score_group_amount]
+    return best_assignment.tolist(), best_score_group_amount

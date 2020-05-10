@@ -1,11 +1,12 @@
-
 from __future__ import print_function
 import mysql.connector
 import json
 import pandas as pd
 from sqlalchemy import create_engine
+import os
 
 home_path = "./"
+data_path = os.path.dirname(os.getcwd()) + "\\data\\"
 init_script_path = home_path+"init.sql"
 suffix = ".txt"
 csv_names = ["customers","vehicles","times"]
@@ -37,7 +38,7 @@ def run_init_script(init_path=init_script_path):
             buffer = ""
 
 # Each txt-file must have the labels/column names ontop, and the file names should be listed in the variables at the top
-def load_csvs_into_database(directory=home_path,file_names=csv_names,extensions=suffix):
+def load_csvs_into_database(directory=data_path,file_names=csv_names,extensions=suffix):
     for i in file_names:
         df = pd.read_csv(directory+i+extensions)
         contents = df.to_sql(con=engine, name=i, if_exists='replace')
