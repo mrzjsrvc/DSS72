@@ -1,6 +1,6 @@
-name,latitude,longitude,demand
-"Karlshamn",56.1706904,14.8585045
-"Sölvesborg",56.0522417,14.5830589
-"Olofström",56.2772118,14.5289672
-"Ronneby",56.210702,15.2741726
-"Karlskrona",56.1627312,15.5846371
+name,latitude,longitude,demand,status,group,depot
+"Karlshamn",56.1706904,14.8585045,0,"active",-1,true
+"Sölvesborg",56.0522417,14.5830589,40,"active",-1
+"Olofström",56.2772118,14.5289672,10,"active",-1
+"Ronneby",56.210702,15.2741726,25,"active",-1
+"Karlskrona",56.1627312,15.5846371,15,"active",-1

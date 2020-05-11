@@ -58,6 +58,7 @@ def run_sql_string(str):
     except:
         return "Done"
 
-run_init_script()
-load_csvs_into_database()
-print(" === USE THE COMMAND run_sql_string(sql_query) TO INTERACT WITH THE DATABASE ===")
+def init():
+    run_init_script()
+    load_csvs_into_database()
+    print(" === USE THE COMMAND run_sql_string(sql_query) TO INTERACT WITH THE DATABASE ===")

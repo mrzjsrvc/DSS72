@@ -6,13 +6,21 @@ CREATE TABLE IF NOT EXISTS customers (
     name VARCHAR(255) NOT NULL,
     latitude DECIMAL(10, 8) NOT NULL,
     longitude DECIMAL(11, 8) NOT NULL,
-    demand INT
+    demand INT,
+    status VARCHAR(255) NOT NULL,
+    group_nr INT NOT NULL,
+    depot BOOLEAN
 )  ENGINE=INNODB;
 CREATE TABLE IF NOT EXISTS vehicles (
     idx INT AUTO_INCREMENT PRIMARY KEY,
     brand VARCHAR(255) NOT NULL,
     capacity INT,
-    fuel_consumption DECIMAL(4, 2) NOT NULL
+    fuel_consumption DECIMAL(4, 2) NOT NULL,
+    status VARCHAR(255) NOT NULL
+)  ENGINE=INNODB;
+CREATE TABLE IF NOT EXISTS groups (
+    idx INT AUTO_INCREMENT PRIMARY KEY,
+    rating DECIMAL(12, 8) NOT NULL
 )  ENGINE=INNODB;
 CREATE TABLE IF NOT EXISTS times (
     idx INT AUTO_INCREMENT PRIMARY KEY,
