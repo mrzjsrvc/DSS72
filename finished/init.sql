@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS vehicles (
     brand VARCHAR(255) NOT NULL,
     capacity INT,
     fuel_consumption DECIMAL(4, 2) NOT NULL,
-    status VARCHAR(255) NOT NULL
+    status VARCHAR(255) NOT NULL,
+    rating DECIMAL(12, 8) NOT NULL 
 )  ENGINE=INNODB;
 CREATE TABLE IF NOT EXISTS groups (
     idx INT AUTO_INCREMENT PRIMARY KEY,

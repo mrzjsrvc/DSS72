@@ -13,11 +13,15 @@ pickle_name = "pickle"
 distance = [[0, 29622, 30337, 31631, 57968], [29010, 0, 32434, 56556, 82894], [30117, 32301, 0, 57663, 84000], [33337, 58184, 58899, 0, 27842], [58811, 83659, 84374, 29970, 0]]
 time = [[0, 1362, 1550, 1585, 2737], [1319, 0, 1577, 2410, 3562], [1549, 1560, 0, 2640, 3792], [1604, 2476, 2663, 0, 1576], [2793, 3665, 3853, 1746, 0]]
 
-def rate_all_trucks(trucks_matrix=rsql("SELECT customers.capacity, customers.fuel_consumption FROM customers.vehicles WHERE customers.status = 'available'")):
+def rate_all_trucks(trucks_matrix=rsql("SELECT vehicles.index, vehicles.capacity, vehicles.fuel_consumption FROM vehicles")):
     ratings = []
 
     for truck in trucks_matrix:
-        ratings.append(dedico.capacity_fuel_coefficient_calculation(truck[0],truck[1]))
+        ratings.append(dedico.capacity_fuel_coefficient_calculation(truck[1],truck[2]))
+
+    rsql("UPDATE vehicles SET vehicles.rating = -1")
+    for index, i in enumerate(ratings):
+        rsql("UPDATE vehicles SET vehicles.rating = "+str(i)+" WHERE vehicles.index = "+str(index))
 
     return ratings
 
@@ -100,7 +104,7 @@ def divide_groups():
         temp = pickle_name+str(index)
         pickle_names_arr.append(temp)
         result.to_pickle(temp)
-        print(result)
+        # print(result)
 
     # Uncomment below if you want to see the output of this above
     # for i in range(nr_of_groups):
@@ -113,5 +117,3 @@ def divide_groups():
         rsql("INSERT INTO groups(rating) VALUES ("+str(i)+")")
 
     return distance_matrix, time_matrix
-
-print(divide_groups())

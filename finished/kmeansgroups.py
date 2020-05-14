@@ -19,7 +19,7 @@ def get_groups(X, range_n_clusters=[2, 3, 4]):
         cluster_labels = clusterer.fit_predict(X)
 
         silhouette_label_score = silhouette_score(X, cluster_labels)
-        print("For n_clusters =", n_clusters, "The average silhouette_score is :", silhouette_label_score)
+        # print("For n_clusters =", n_clusters, "The average silhouette_score is :", silhouette_label_score)
         sample_silhouette_values = silhouette_samples(X, cluster_labels)
 
         if best_score <= silhouette_label_score:

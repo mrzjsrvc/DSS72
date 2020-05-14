@@ -55,3 +55,26 @@ def TSP_all_roads(distance_mtx):
 
     solution = routing.SolveWithParameters(search_parameters)
     return return_solution(manager, routing, solution)
+
+def TSP_specific_start_to_end(distance_mtx, start, end):
+        data = create_data_model(distance_mtx)
+        data['starts'] = start
+        data['ends'] = end
+
+        manager = pywrapcp.RoutingIndexManager(len(data['distance_matrix']),
+                                           data['num_vehicles'], data['starts'],
+                                           data['ends'])
+        routing = pywrapcp.RoutingModel(manager)
+        def distance_callback(from_index, to_index):
+            from_node = manager.IndexToNode(from_index)
+            to_node = manager.IndexToNode(to_index)
+            return data['distance_matrix'][from_node][to_node]
+
+        transit_callback_index = routing.RegisterTransitCallback(distance_callback)
+        routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
+
+        search_parameters = pywrapcp.DefaultRoutingSearchParameters()
+        search_parameters.first_solution_strategy = (routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC)
+
+        solution = routing.SolveWithParameters(search_parameters)
+        return return_solution(manager, routing, solution)

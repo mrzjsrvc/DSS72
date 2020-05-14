@@ -1,4 +1,4 @@
-brand,capacity,fuel_consumption,status
+brand,capacity,fuel_consumption,status,rating
 "Scania",5,23.70,"available"
 "Scania 2",15,23.70,"available"
 "Mercedes",10,29.00,"available"
