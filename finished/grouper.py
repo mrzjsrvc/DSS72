@@ -1,7 +1,7 @@
 from db import run_sql_string as rsql
 import kmeansgroups
 import tsp
-# import distancematrixtest
+# import distancematrix
 import dedico
 # import os
 import pandas as pd
@@ -54,7 +54,7 @@ def rate_all_groups(pickle_names, demand_array, demand_groups): #x, [0, 40, 10, 
 
     return ratings
 
-def divide_groups():
+def divide_groups(distance_matrix=None, time_matrix=None): # Reuse the matrices to avoid surplus requests
 
     customers_matrix = rsql("SELECT customers.latitude, customers.longitude FROM customers WHERE customers.status = 'active' AND customers.depot IS NULL")
 
@@ -82,7 +82,8 @@ def divide_groups():
 
     coordinates = rsql("SELECT CONCAT(customers.latitude, ',', customers.longitude) FROM customers WHERE customers.status = 'active' OR customers.depot IS TRUE")
     # When we are about to try the whole thing live, we uncomment this below, until then, use the line under it
-    #distance_matrix, time_matrix = distancematrixtest.produce_matrices(coordinates)
+    #if distance_matrix == None and time_matrix == None:
+        #distance_matrix, time_matrix = distancematrix.produce_matrices(coordinates)
     distance_matrix, time_matrix = distance, time
     dst_m_exp = pd.DataFrame(distance_matrix)
 
@@ -113,7 +114,7 @@ def divide_groups():
 
     ratings = rate_all_groups(pickle_names_arr, demands, demand_matrix)
     rsql("DELETE FROM groups")
-    for i in ratings:
-        rsql("INSERT INTO groups(rating) VALUES ("+str(i)+")")
+    for idx, i in enumerate(ratings):
+        rsql("INSERT INTO groups(id, rating) VALUES ("+str(idx)+","+str(i)+")")
 
     return distance_matrix, time_matrix

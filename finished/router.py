@@ -4,7 +4,7 @@ import dedico
 import tsp
 from db import run_sql_string as rsql
 
-def customer_heuristic_rating(distance_matrix, group_nr, truck_index):
+def customer_heuristic_rating(distance_matrix, group_nr):
 
     heuristic_table = []
 
@@ -33,12 +33,12 @@ def translate(clist, sought):
             return idx
     return -1
 
-def suggested_full_route(distance_matrix, time_matrix, group_nr, truck_index):
+def suggested_full_route(distance_matrix, time_matrix, group_nr):
 
     customers = [i[0] for i in group_nr]
     group_distance_matrix = pd.DataFrame(distance_matrix).iloc[customers,customers]
 
-    heuristics_table = customer_heuristic_rating(distance_matrix, group_nr, truck_index)    # Produce the heuristics table
+    heuristics_table = customer_heuristic_rating(distance_matrix, group_nr)          # Produce the heuristics table
     goal = min(heuristics_table)[1]                                                         # Index of the location in the SQL table
     start = heuristics_table[0][1]                                                          # Index of the depot in the SQL table
 
@@ -47,7 +47,9 @@ def suggested_full_route(distance_matrix, time_matrix, group_nr, truck_index):
 
     return_path = tsp.TSP_specific_start_to_end(group_distance_matrix, [translated_goal], [translated_start])
 
-    return return_path
+    full_path = [customers[i] for i in return_path]
+
+    return full_path
 
 #print(suggested_full_route())
 
