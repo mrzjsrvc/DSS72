@@ -10,18 +10,18 @@ from db import run_sql_string as rsql
 #
 # print(str(timedelta(minutes=value)))
 
-q = int(rsql("SELECT SUM(demand) FROM customers;")[0][0])
-print(q)
+# q = int(rsql("SELECT SUM(demand) FROM customers;")[0][0])
+# print(q)
+#
+# nr = 20
+# for i in range(nr):
+#     if i:
+#         print("Yes",i)
+#     else:
+#         print("No",i)
 
-nr = 20
-for i in range(nr):
-    if i:
-        print("Yes",i)
-    else:
-        print("No",i)
 
-
-#db.init()
+db.init()
 # a = [1,2,3,4,5]
 # b = [3,4,5,6,7]
 # c = [6,7]

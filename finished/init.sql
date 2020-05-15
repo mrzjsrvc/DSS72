@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS vehicles (
     status VARCHAR(255) NOT NULL DEFAULT "available",
     rating DECIMAL(12, 8) NOT NULL,
     lunch_start VARCHAR(255),
-    return_time VARCHAR(255) DEFAULT "00:00"
+    return_time INT DEFAULT 0
 )  ENGINE=INNODB;
 CREATE TABLE IF NOT EXISTS groups (
     id INT PRIMARY KEY,

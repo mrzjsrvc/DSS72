@@ -114,6 +114,7 @@ def divide_groups(distance_matrix=None, time_matrix=None): # Reuse the matrices 
 
     ratings = rate_all_groups(pickle_names_arr, demands, demand_matrix)
     rsql("DELETE FROM groups")
+    # rsql("INSERT INTO groups(id, rating) VALUES (-1,9999)")
     for idx, i in enumerate(ratings):
         rsql("INSERT INTO groups(id, rating) VALUES ("+str(idx)+","+str(i)+")")
 
