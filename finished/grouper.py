@@ -62,7 +62,7 @@ def divide_groups(distance_matrix=None, time_matrix=None): # Reuse the matrices 
     nr_of_groups = 1
     try:
         group_assignment, nr_of_groups = kmeansgroups.get_groups(customers_matrix, list([i for i in range(len(customers_matrix))])[2:]) #Must be at least 2 customers
-    except exceptions or Exception:
+    except Exception:
         group_assignment = [0]
         nr_of_groups = 1                                                  #If less than 2 customers, set to 1 group
 
