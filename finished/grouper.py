@@ -76,7 +76,7 @@ def divide_groups(distance_matrix=None, time_matrix=None): # Reuse the matrices 
 
     rsql("UPDATE customers SET customers.group = -1")
     for index, i in zip(identity_array, group_assignment):
-        rsql("UPDATE customers SET customers.group = "+str(i)+" WHERE customers.index = "+str(index))
+        rsql("UPDATE customers SET customers.group = "+str(i)+" WHERE customers.index = "+str(index)+" AND customers.status = 'active'")
 
     # ========================================================================================================
 

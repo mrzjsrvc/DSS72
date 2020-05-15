@@ -102,7 +102,7 @@ def single_truck_scheduler(suggested_route, truck, start_minutes, distance_matri
         cmp_2 = ((rounds_necessary_remainder_removed * distance_home_to_next) + next_distance + distance_next_to_home)
         #print(cmp_1, cmp_2)
 
-        if cmp_1 >= cmp_2 or (current_location == home_depot and next_location != suggested_route[-1]):
+        if (cmp_1 >= cmp_2 or (current_location == home_depot and next_location != suggested_route[-1])) and currently_carrying != 0:
             arrival_timestamp = departure_timestamp + next_distance_time
             unload_timestamp = arrival_timestamp    # Start unloading immediately upon arrival
             break_timestamp = unload_timestamp + unload_time
@@ -120,9 +120,10 @@ def single_truck_scheduler(suggested_route, truck, start_minutes, distance_matri
                 currently_carrying -= next_demand
                 next_demand = 0
 
-            if next_demand == 0:
-                rsql("UPDATE customers SET customers.status = 'inactive' WHERE customers.index = "+str(next_location))
-                rsql("UPDATE customers SET customers.group = -1 WHERE customers.index = "+str(next_location))
+            if next_location != home_depot:
+                if next_demand == 0:
+                    rsql("UPDATE customers SET customers.status = 'inactive' WHERE customers.index = "+str(next_location))
+                    rsql("UPDATE customers SET customers.group = -1 WHERE customers.index = "+str(next_location))
 
             rsql("UPDATE customers SET customers.demand = "+str(next_demand)+" WHERE customers.index = "+str(next_location))
             current_location = next_location
@@ -152,13 +153,19 @@ def get_next_truck_group_pair(distance_matrix=distance, time_matrix=time):
 
     selected_group = None
     for i in groups_by_urgency:
-        if customer_demand[i[0]][1] > 0:
-            selected_group = customer_demand[i[0]][0]
+        for j in customer_demand:
+            if j[0] == i[0]:
+                if j[1] > 0:
+                    selected_group = j[0]
+
+    # print("groups_by_urgency: ",groups_by_urgency)
+    # print("customer_demand: ",customer_demand)
+    # print("selected_group: ",selected_group)
 
     group_nr = rsql("SELECT * FROM customers WHERE customers.group = "+str(selected_group)+" OR customers.depot = 1")
     truck = rsql("SELECT * FROM vehicles WHERE vehicles.status = 'available' ORDER BY vehicles.rating DESC LIMIT 1")
     suggested_route = router.suggested_full_route(distance_matrix, time_matrix, group_nr)
-    if truck == "Done" or truck == [] or suggested_route == [0]: # If all trucks are occupied or no more groups left
+    if truck == "Done" or truck == []: # If all trucks are occupied or no more groups left
         return [0], -1
     else:
         return suggested_route, truck[0]
