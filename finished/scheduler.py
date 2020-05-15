@@ -13,8 +13,6 @@ from db import run_sql_string as rsql
 distance = [[0, 29622, 30337, 31631, 57968], [29010, 0, 32434, 56556, 82894], [30117, 32301, 0, 57663, 84000], [33337, 58184, 58899, 0, 27842], [58811, 83659, 84374, 29970, 0]]
 time = [[0, 1362, 1550, 1585, 2737], [1319, 0, 1577, 2410, 3562], [1549, 1560, 0, 2640, 3792], [1604, 2476, 2663, 0, 1576], [2793, 3665, 3853, 1746, 0]]
 
-
-
 # THESE VALUES BELOW ARE EXAMPLE VALUES, NOT HARDCODING
 # THE FUNCTIONS CAN TAKE SPECIFIED ARGUMENTS, BUT DURING THE PRESENTATION, THESE ARE HERE
 # TO MAKE IT EASIER TO TWEAK THE EXAMPLES DURING THE DEMONSTRATION
@@ -46,44 +44,37 @@ def plan_schedule(work_start_time=work_start_time_x, work_end_time=work_end_time
     amount_of_intervals = (end_time_offset - start_time_offset) / load_time
     # Included amount of intervals within lunch, so the for-loop is easier to generalize
 
-    grouper.rate_all_trucks()                                                                # Sets ratings of all trucks in database
-    distance_matrix, time_matrix = grouper.divide_groups()       # Sets ratings and divides groups in database, returns distance- & time matrix (recycles matrices to avoid more requests to Google)
+    grouper.rate_all_trucks()                                             # Sets ratings of all trucks in database
+    distance_matrix, time_matrix = grouper.divide_groups()                # Sets ratings and divides groups in database, returns distance- & time matrix (recycles matrices to avoid more requests to Google)
 
     for i in range(amount_of_intervals):
         if current_time > lunch_time_start_offset and current_time < lunch_time_end_offset: # For workers at the depot
             pass
         else:
             if int(rsql("SELECT SUM(demand) FROM customers;")[0][0]):     # If any demand remains
+                update_truck_availability(current_time)                   # MAY NEED TO ADD LUNCH FOR DRIVERS HERE SOMEWHERE
                 suggested_route, truck = get_next_truck_group_pair()
                 if truck != -1:                                           # If a truck is available
-                    single_truck_scheduler(suggested_route, truck, current_time, distance_matrix, time_matrix)
+                    schedule += single_truck_scheduler(suggested_route, truck, current_time, distance_matrix, time_matrix)
             # TAKE THE TRUCK AND SEND IT OFF, PUT AS UNAVAILABLE, SET NEW DEMANDS OF CUSTOMERS
             # WRITE THE ENTIRE SCHEDULE FOR THIS TRUCK FROM START TO FINISH - STORE IT IN "SCHEDULE"
         current_time += load_time
 
+    return schedule
 
-    the_time = datetime.time(6,30)
-    value = the_time.hour + the_time.minute/60.0
-
-
-
-
-
-
-
-
-
-
-
-
+def update_truck_availability(current_time):
+    # Doing this solution because otherwise we would have to work on the entire dates as datetime in MySQL, I wanted simple strings, so now we have to use those instead
+    unavailable_vehicles = rsql("SELECT vehicles.index, vehicles.return_time FROM vehicles WHERE vehicles.status = 'unavailable'")
+    for truck in unavailable_vehicles:
+        if datetime_string_to_minutes(truck[1]) <= current_time:
+            rsql("UPDATE vehicles SET vehicles.status = 'available' WHERE vehicles.return_time = "+str(truck[0]))
 
 def single_truck_scheduler(suggested_route, truck, start_minutes, distance_matrix=None, time_matrix=None, lunch_duration=lunch_duration_x, load_time=load_time_x, unload_time=unload_time_x, break_time=break_time_x, current_location=0, home_depot=0):
     distance_matrix, time_matrix = grouper.divide_groups(distance_matrix, time_matrix) # Must be done each time - live changes in demand
-    start = minutes_to_hours_string(start_minutes)
-    departure = minutes_to_hours_string(start_minutes + load_time)
+    start_timestamp = start_minutes
+    departure_timestamp = start_minutes + load_time
 
-    arrivals = []
-    unloads = []
+    schedule_array = []
 
     truck_capacity = truck[2]
     currently_carrying = truck_capacity
@@ -94,32 +85,54 @@ def single_truck_scheduler(suggested_route, truck, start_minutes, distance_matri
         distance_home_to_next, distance_home_to_next_time = distance_matrix[home_depot][next_location], time_matrix[home_depot][next_location]
         distance_next_to_home, distance_next_to_home_time = distance_matrix[next_location][home_depot], time_matrix[next_location][home_depot]
 
+        arrival_timestamp = None
+        unload_timestamp = None
+        break_timestamp = None
+        return_timestamp = None
+        # Start & Departure will be set to the same time if not in depot
+
         next_demand = rsql("SELECT customers.demand FROM customers WHERE customers.index = "+str(next_location))[0][0]
         rounds_necessary = math.ceil(next_demand / truck_capacity)
         rounds_necessary_remainder_removed = math.ceil((next_demand - currently_carrying) / truck_capacity)
 
-        if ((rounds_necessary * distance_home_to_next) + distance_home) > ((rounds_necessary_remainder_removed * distance_home_to_next) + next_distance + distance_next_to_home):
-            continue # = does remainder of loop, break = skips remainder of loop
+        if ((rounds_necessary * distance_home_to_next) + distance_home)\
+            >= ((rounds_necessary_remainder_removed * distance_home_to_next) + next_distance + distance_next_to_home)\
+            and current_location != home_depot:
+
+            arrival_timestamp = departure_timestamp + next_distance_time
+            unload_timestamp = arrival_timestamp    # Start unloading immediately upon arrival
+            break_timestamp = unload_timestamp + unload_time
+
+            schedule_line = [minutes_to_hours_string(start_timestamp), minutes_to_hours_string(departure_timestamp), minutes_to_hours_string(arrival_timestamp), minutes_to_hours_string(unload_timestamp), minutes_to_hours_string(break_timestamp)]
+            schedule_array.append(schedule_line)
+
+            start_timestamp = break_timestamp + break_time
+            departure_timestamp = start_timestamp
+
+            if next_demand >= currently_carrying:
+                next_demand -= currently_carrying
+                currently_carrying = 0
+            else:
+                currently_carrying -= next_demand
+                next_demand = 0
+
+            rsql("UPDATE customers SET customers.demand = "+str(next_demand)+" WHERE customers.index = "+str(next_location))
+            current_location = next_location
+
         else:
+            arrival_timestamp = departure_timestamp + distance_home_time
+            unload_timestamp = arrival_timestamp
+            break_timestamp = unload_timestamp
 
+            schedule_line = [str(truck[0]), " -> ", str(next_location), minutes_to_hours_string(start_timestamp), minutes_to_hours_string(departure_timestamp), minutes_to_hours_string(arrival_timestamp), minutes_to_hours_string(unload_timestamp), minutes_to_hours_string(break_timestamp)]
+            schedule_array.append(schedule_line)
 
+            return_timestamp = break_timestamp + break_time
 
-    # for i in suggested_route:
-    #
-    #
-    #
-    #
-    # next_stop = suggested_route[0]
-    #
-    # while next_stop != home_depot: # Ahahah, strap on your seatbelts, we're going to Costco next
-    #
+            break # = skips remainder of loop, continue = does remainder of loop
 
-
-    # CHECK AFTER EACH STEP; is distance to next >= distance from depot to current?
-    # If so, skip route, go back directly
-    # OR: if fulfilling next stop's demand in total is more meters than "swinging by" and shipping remainder
-    #     then swing by, else return to base to resupply
-
+    rsql("UPDATE vehicles SET vehicles.status = 'unavailable', vehicles.return_time = '"+minutes_to_hours_string(return_timestamp)+"' WHERE vehicles.index = "+str(truck[0]))
+    return schedule_array
 
 def get_next_truck_group_pair(distance_matrix=distance, time_matrix=time):
     group_nr = rsql("SELECT * FROM customers WHERE customers.group = (SELECT groups.id FROM groups ORDER BY groups.rating DESC LIMIT 1) OR customers.depot = 1")
@@ -130,4 +143,4 @@ def get_next_truck_group_pair(distance_matrix=distance, time_matrix=time):
     else:
         return suggested_route, truck
 
-print(get_next_truck_group_pair())
+print(plan_schedule())
