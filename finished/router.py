@@ -41,8 +41,8 @@ def suggested_full_route(distance_matrix, time_matrix, group_nr):
         group_distance_matrix = pd.DataFrame(distance_matrix).iloc[customers,customers]
 
         heuristics_table = customer_heuristic_rating(distance_matrix, group_nr)          # Produce the heuristics table
-        goal = min(heuristics_table)[1]                                                         # Index of the location in the SQL table
-        start = heuristics_table[0][1]                                                          # Index of the depot in the SQL table
+        goal = min(heuristics_table)[1]                                                  # Index of the location in the SQL table
+        start = heuristics_table[0][1]                                                   # Index of the depot in the SQL table
 
         translated_goal = translate(customers, goal)
         translated_start = translate(customers, start)
@@ -61,17 +61,3 @@ def suggested_full_route(distance_matrix, time_matrix, group_nr):
 # if there is remaining load in the truck so it can judge whether it should go there or return home
 # ALSO; the TSP's results need to be tested and verified, it isn't 100% certain that it produces the correct
 # calculation, it may have to be tweaked in tsp.py
-
-# More urgent: turn off the SQL hardcoded requests - pipe the demands instead
-
-# MIS NOTES TO SELF:
-# A* TO DESTINATION
-# UNLOAD
-# A* BACK HOME? OR SAME WAY AS BEFORE?
-# LEAVE ANY SURPLUS IN LOCATIONS ALONG THE WAY BACK - logarithmic function vs inverse of it(x^2) to set bounds
-
-# go to farthest demand with all first
-# if anything left:
-#     check if any locations along/close between Karlshamn & location
-#     if so; go to the one closest to the straightest road back & deliver remainder to it
-#     then go back to Karlshamn

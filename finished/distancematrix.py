@@ -1,19 +1,15 @@
 from __future__ import division
 from __future__ import print_function
-from os.path import dirname as up
 import requests
 import json
 import urllib
 import sys
 
-key_path = up(up(up(__file__))) + "\\key.txt"
-key_contents = (open(key_path, "r").read())
-
-def create_data(coordinates):
+def create_data(coordinates, API_key):
   """Creates the data."""
   data = {}
-  data['API_key'] = key_contents if len(key_contents) else sys.argv[1]
-  data['addresses'] = coordinates
+  data['API_key'] = API_key # key_contents if len(key_contents) else sys.argv[1]
+  data['addresses'] = [i[0] for i in coordinates]
   return data
 
 def create_distance_matrix(data):
@@ -72,8 +68,8 @@ def build_distance_matrix(response):
 
   return distance_matrix, time_matrix
 
-def produce_matrices(coordinates):
-  data = create_data(coordinates)
+def produce_matrices(coordinates, API_key):
+  data = create_data(coordinates, API_key)
   addresses = data['addresses']
   API_key = data['API_key']
   distance_matrix, time_matrix = create_distance_matrix(data)

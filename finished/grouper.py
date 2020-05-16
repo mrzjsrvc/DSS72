@@ -1,17 +1,17 @@
 from db import run_sql_string as rsql
 import kmeansgroups
 import tsp
-# import distancematrix
+import distancematrix
 import dedico
-# import os
+import os
 import pandas as pd
 import tables
 
 pickle_name = "pickle"
 
-# Use these pre-generated matrices below to avoid sending requests superfluously:
-distance = [[0, 29622, 30337, 31631, 57968], [29010, 0, 32434, 56556, 82894], [30117, 32301, 0, 57663, 84000], [33337, 58184, 58899, 0, 27842], [58811, 83659, 84374, 29970, 0]]
-time = [[0, 1362, 1550, 1585, 2737], [1319, 0, 1577, 2410, 3562], [1549, 1560, 0, 2640, 3792], [1604, 2476, 2663, 0, 1576], [2793, 3665, 3853, 1746, 0]]
+# While testing, use these pre-generated matrices below to avoid sending requests superfluously:
+# distance = [[0, 29622, 30337, 31631, 57968], [29010, 0, 32434, 56556, 82894], [30117, 32301, 0, 57663, 84000], [33337, 58184, 58899, 0, 27842], [58811, 83659, 84374, 29970, 0]]
+# time = [[0, 1362, 1550, 1585, 2737], [1319, 0, 1577, 2410, 3562], [1549, 1560, 0, 2640, 3792], [1604, 2476, 2663, 0, 1576], [2793, 3665, 3853, 1746, 0]]
 
 def rate_all_trucks(trucks_matrix=rsql("SELECT vehicles.index, vehicles.capacity, vehicles.fuel_consumption FROM vehicles")):
     ratings = []
@@ -54,7 +54,7 @@ def rate_all_groups(pickle_names, demand_array, demand_groups): #x, [0, 40, 10, 
 
     return ratings
 
-def divide_groups(distance_matrix=None, time_matrix=None): # Reuse the matrices to avoid surplus requests
+def divide_groups(API_key, distance_matrix=None, time_matrix=None): # Reuse the matrices to avoid surplus requests
 
     customers_matrix = rsql("SELECT customers.latitude, customers.longitude FROM customers WHERE customers.status = 'active' AND customers.depot IS NULL")
 
@@ -82,9 +82,9 @@ def divide_groups(distance_matrix=None, time_matrix=None): # Reuse the matrices 
 
     coordinates = rsql("SELECT CONCAT(customers.latitude, ',', customers.longitude) FROM customers WHERE customers.status = 'active' OR customers.depot IS TRUE")
     # When we are about to try the whole thing live, we uncomment this below, until then, use the line under it
-    #if distance_matrix == None and time_matrix == None:
-        #distance_matrix, time_matrix = distancematrix.produce_matrices(coordinates)
-    distance_matrix, time_matrix = distance, time
+    if distance_matrix == None and time_matrix == None:
+        distance_matrix, time_matrix = distancematrix.produce_matrices(coordinates, API_key)
+    # distance_matrix, time_matrix = distance, time
     dst_m_exp = pd.DataFrame(distance_matrix)
 
     #print(coordinates)
