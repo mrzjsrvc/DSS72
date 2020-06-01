@@ -30,7 +30,7 @@ class Root(object):
 
         sum_price_1 = 0
         sum_dist_1 = 0
-        
+
         sum_price_2 = 0
         sum_dist_2 = 0
 
@@ -41,6 +41,7 @@ class Root(object):
         for i in contents_to_save:
             sum_price_2 += int(i[-1])
             sum_dist_2 += int(i[-2])
+            print("HELLO: ",sum_price_2,i[-1])
 
         visualizer.save_HTML(contents_to_save, sum_price_1, sum_dist_1, sum_price_2, sum_dist_2)
         header_file = codecs.open("./display.html","r")
