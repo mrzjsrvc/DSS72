@@ -10,7 +10,7 @@ cell_tail = "</td>"
 cell_head_th = "<th>"
 cell_tail_th = "</th>"
 
-table_head = "<table>"
+table_head = "<h2>Schedule</h2><table>"
 table_tail = "</table>"
 
 table_head_head = "<thead>"
@@ -61,7 +61,7 @@ def table_HTML_gen(head_strings, row_strings):
 
     return table
 
-def save_HTML(contents):
+def save_HTML(contents, sum_price_rand, sum_dist_rand, sum_price_dss, sum_dist_dss):
     file = open(header_loc,"r")
     header = file.read()
     file.close()
@@ -73,7 +73,16 @@ def save_HTML(contents):
     table = table_HTML_gen(titles, contents)
     # print(contents) # For testing
 
-    complete = header + table + footer
+    summed_results = """
+            <span style=\"float: left;\">FIFO Distance: {} km</span><br>
+            <span style=\"float: left;\">FIFO Cost: {} SEK</span><br><br>
+            <span style=\"float: left;\">DSS Distance: {} km</span><br>
+            <span style=\"float: left;\">DSS Cost: {} SEK</span><br><br>
+            <span style=\"float: left;\">Saved Distance: {} km</span><br>
+            <span style=\"float: left;\">Saved Cost: {} SEK</span><br><br>
+    """.format(sum_dist_rand/1000, sum_price_rand, sum_dist_dss/1000, sum_price_dss, (sum_dist_rand-sum_dist_dss)/1000, (sum_price_rand-sum_price_dss))
+
+    complete = header + summed_results + table + footer
     print(complete)
 
     file = open(display_file_name,"w+")

@@ -1,10 +1,11 @@
 import grouper
 import router
 import pandas as pd
-import dedico
-import tsp
 import math
 import db
+import copy
+
+import randomizer
 
 from datetime import datetime
 from datetime import timedelta
@@ -24,6 +25,7 @@ unload_time_x       = 10
 break_time_x        = 10
 work_start_time_x   = "08:00"
 work_end_time_x     = "17:00"
+fuel_price_xx       = 13.5
 
 def datetime_string_to_minutes(date_string):
     res = datetime.strptime(date_string, "%H:%M")
@@ -33,7 +35,7 @@ def minutes_to_hours_string(min):
     return str(timedelta(minutes=min))
 
 # If no lunch, set to 00:00, and load_time must make total hours in half of a day evenly divisible(modulus to check)
-def plan_schedule(API_key, work_start_time=work_start_time_x, work_end_time=work_end_time_x, lunch_time=lunch_time_x, lunch_duration=lunch_duration_x, load_time=load_time_x, unload_time=unload_time_x, break_time=break_time_x):
+def plan_schedule(API_key, work_start_time=work_start_time_x, work_end_time=work_end_time_x, lunch_time=lunch_time_x, lunch_duration=lunch_duration_x, load_time=load_time_x, unload_time=unload_time_x, break_time=break_time_x, fuel_price_x=fuel_price_xx):
     schedule = []
 
     start_time_offset = datetime_string_to_minutes(work_start_time)
@@ -48,6 +50,8 @@ def plan_schedule(API_key, work_start_time=work_start_time_x, work_end_time=work
     grouper.rate_all_trucks()                                             # Sets ratings of all trucks in database
     distance_matrix, time_matrix = grouper.divide_groups(API_key)                # Sets ratings and divides groups in database, returns distance- & time matrix (recycles matrices to avoid more requests to Google)
 
+    distance_matrix_copy, time_matrix_copy = copy.deepcopy(distance_matrix), copy.deepcopy(time_matrix)
+
     for i in range(amount_of_intervals):
         if current_time > lunch_time_start_offset and current_time < lunch_time_end_offset: # For workers at the depot
             pass
@@ -56,12 +60,15 @@ def plan_schedule(API_key, work_start_time=work_start_time_x, work_end_time=work
                 update_truck_availability(current_time)                   # MAY NEED TO ADD LUNCH FOR DRIVERS HERE SOMEWHERE
                 suggested_route, truck = get_next_truck_group_pair(distance_matrix, time_matrix)
                 if truck != -1:                                           # If a truck is available
-                    schedule += single_truck_scheduler(API_key, suggested_route, truck, current_time, distance_matrix, time_matrix)
+                    schedule += single_truck_scheduler(API_key, suggested_route, truck, current_time, distance_matrix, time_matrix, fuel_price_x)
             # TAKE THE TRUCK AND SEND IT OFF, PUT AS UNAVAILABLE, SET NEW DEMANDS OF CUSTOMERS
             # WRITE THE ENTIRE SCHEDULE FOR THIS TRUCK FROM START TO FINISH - STORE IT IN "SCHEDULE"
         current_time += load_time
 
-    return schedule
+    db.init()
+    randomized_schedule = randomizer.plan_random_schedule(distance_matrix_copy, time_matrix, work_start_time, work_end_time, lunch_time, lunch_duration, load_time, unload_time, break_time, fuel_price_x)
+
+    return schedule, randomized_schedule
 
 def update_truck_availability(current_time):
     # Doing this solution because otherwise we would have to work on the entire dates as datetime in MySQL, I wanted simple strings, so now we have to use those instead
@@ -71,7 +78,7 @@ def update_truck_availability(current_time):
             if truck[1] <= current_time:
                 rsql("UPDATE vehicles SET vehicles.status = 'available' WHERE vehicles.index = "+str(truck[0]))
 
-def single_truck_scheduler(API_key, suggested_route, truck, start_minutes, distance_matrix=None, time_matrix=None, lunch_duration=lunch_duration_x, load_time=load_time_x, unload_time=unload_time_x, break_time=break_time_x, current_location=0, home_depot=0):
+def single_truck_scheduler(API_key, suggested_route, truck, start_minutes, distance_matrix=None, time_matrix=None, lunch_duration=lunch_duration_x, load_time=load_time_x, unload_time=unload_time_x, break_time=break_time_x, current_location=0, home_depot=0, fuel_price_x=fuel_price_xx):
     distance_matrix, time_matrix = grouper.divide_groups(API_key, distance_matrix, time_matrix) # Must be done each time - live changes in demand
     start_timestamp = start_minutes
     departure_timestamp = start_minutes + load_time
@@ -108,7 +115,7 @@ def single_truck_scheduler(API_key, suggested_route, truck, start_minutes, dista
             unload_timestamp = arrival_timestamp    # Start unloading immediately upon arrival
             break_timestamp = unload_timestamp + unload_time
 
-            schedule_line = [str(truck[0]), str(current_location), str(next_location), str(currently_carrying), minutes_to_hours_string(start_timestamp), minutes_to_hours_string(departure_timestamp), minutes_to_hours_string(arrival_timestamp), minutes_to_hours_string(unload_timestamp), minutes_to_hours_string(break_timestamp), str(next_distance), str(math.ceil(fuel_price*(next_distance/1000)))]
+            schedule_line = [str(truck[0]), str(current_location), str(next_location), str(currently_carrying), minutes_to_hours_string(start_timestamp), minutes_to_hours_string(departure_timestamp), minutes_to_hours_string(arrival_timestamp), minutes_to_hours_string(unload_timestamp), minutes_to_hours_string(break_timestamp), str(next_distance), str(math.ceil(fuel_price_x*(fuel_price/100)*(next_distance/1000)))]
             schedule_array.append(schedule_line)
 
             start_timestamp = break_timestamp + break_time
@@ -136,7 +143,7 @@ def single_truck_scheduler(API_key, suggested_route, truck, start_minutes, dista
             unload_timestamp = arrival_timestamp
             break_timestamp = unload_timestamp
 
-            schedule_line = [str(truck[0]), str(current_location), str(home_depot), str(currently_carrying), minutes_to_hours_string(start_timestamp), minutes_to_hours_string(departure_timestamp), minutes_to_hours_string(arrival_timestamp), minutes_to_hours_string(unload_timestamp), minutes_to_hours_string(break_timestamp), str(distance_home), str(math.ceil(fuel_price*(distance_home/1000)))]
+            schedule_line = [str(truck[0]), str(current_location), str(home_depot), str(currently_carrying), minutes_to_hours_string(start_timestamp), minutes_to_hours_string(departure_timestamp), minutes_to_hours_string(arrival_timestamp), minutes_to_hours_string(unload_timestamp), minutes_to_hours_string(break_timestamp), str(distance_home), str(math.ceil(fuel_price_x*(fuel_price/100)*(next_distance/1000)))]
             schedule_array.append(schedule_line)
 
             return_timestamp = break_timestamp + break_time

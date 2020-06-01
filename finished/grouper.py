@@ -3,9 +3,7 @@ import kmeansgroups
 import tsp
 import distancematrix
 import dedico
-import os
 import pandas as pd
-import tables
 
 pickle_name = "pickle"
 

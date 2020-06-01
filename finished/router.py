@@ -1,8 +1,6 @@
-import grouper
 import pandas as pd
 import dedico
 import tsp
-from db import run_sql_string as rsql
 
 def customer_heuristic_rating(distance_matrix, group_nr):
 
