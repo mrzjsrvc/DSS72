@@ -24,9 +24,9 @@ class Root(object):
     def index(self):
         key_path = str(Path(__file__).resolve().parents[2]) + "\\key.txt" # up(up(up(__file__))) + "\\key.txt"
         API_key = (open(key_path, "r").read())
-        #scheduler.plan_schedule(work_start_time=, work_end_time=, lunch_time=, lunch_duration=, load_time=, unload_time=, break_time=)
+        #scheduler.plan_schedule(API_key=, work_start_time=, work_end_time=, lunch_time=, lunch_duration=, load_time=, unload_time=, break_time=)
         db.init()
-        contents_to_save, randomizer_results = scheduler.plan_schedule(API_key, "08:00", "17:00", "12:00", 60, 15, 10, 10)
+        contents_to_save, randomizer_results = scheduler.plan_schedule(API_key, work_start_time="08:00", work_end_time="17:00", lunch_time="12:00", lunch_duration=60, load_time=15, unload_time=10, break_time=10, fuel_price_x=13.5)
 
         sum_price_1 = 0
         sum_dist_1 = 0
@@ -41,7 +41,6 @@ class Root(object):
         for i in contents_to_save:
             sum_price_2 += int(i[-1])
             sum_dist_2 += int(i[-2])
-            print("HELLO: ",sum_price_2,i[-1])
 
         visualizer.save_HTML(contents_to_save, sum_price_1, sum_dist_1, sum_price_2, sum_dist_2)
         header_file = codecs.open("./display.html","r")

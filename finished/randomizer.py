@@ -50,7 +50,7 @@ def plan_random_schedule(distance_matrix, time_matrix, work_start_time=work_star
                 update_truck_availability(current_time)                   # MAY NEED TO ADD LUNCH FOR DRIVERS HERE SOMEWHERE
                 suggested_route, truck = get_next_truck_group_pair()
                 if truck != -1:                                           # If a truck is available #CHANGE: suggested; if truck != -1, and suggested_route != []
-                    schedule += single_truck_scheduler(suggested_route[0], truck, current_time, distance_matrix, time_matrix)
+                    schedule += single_truck_scheduler(suggested_route=suggested_route[0], truck=truck, start_minutes=current_time, distance_matrix=distance_matrix, time_matrix=time_matrix, lunch_duration=lunch_duration, load_time=load_time, unload_time=unload_time, break_time=break_time, current_location=0, home_depot=0, fuel_price_x=fuel_price_x)
             # TAKE THE TRUCK AND SEND IT OFF, PUT AS UNAVAILABLE, SET NEW DEMANDS OF CUSTOMERS
             # WRITE THE ENTIRE SCHEDULE FOR THIS TRUCK FROM START TO FINISH - STORE IT IN "SCHEDULE"
         current_time += load_time

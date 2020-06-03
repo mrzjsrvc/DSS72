@@ -1,0 +1,11 @@
+name,latitude,longitude,demand,status,group,depot
+"Karlshamn",56.1706904,14.8585045,0,"inactive",-1,true
+"Sölvesborg",56.0522417,14.5830589,40,"active",NULL
+"Olofström",56.2772118,14.5289672,10,"active",NULL
+"Ronneby",56.210702,15.2741726,25,"active",NULL
+"Karlskrona",56.1627312,15.5846371,15,"active",NULL
+"Lyckeby",56.198501,15.654646,20,"active",NULL
+"Ramdala",56.179665,15.769204,20,"active",NULL
+"Rödeby",56.261149,15.618623,20,"active",NULL
+"Tving",56.310608,15.459727,20,"active",NULL
+"Backaryd",56.344620,15.146689,20,"active",NULL

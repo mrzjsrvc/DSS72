@@ -78,9 +78,9 @@ def save_HTML(contents, sum_price_rand, sum_dist_rand, sum_price_dss, sum_dist_d
             <span style=\"float: left;\">FIFO Cost: {} SEK</span><br><br>
             <span style=\"float: left;\">DSS Distance: {} km</span><br>
             <span style=\"float: left;\">DSS Cost: {} SEK</span><br><br>
-            <span style=\"float: left;\">Saved Distance: {} km</span><br>
-            <span style=\"float: left;\">Saved Cost: {} SEK</span><br><br>
-    """.format(sum_dist_rand/1000, sum_price_rand, sum_dist_dss/1000, sum_price_dss, (sum_dist_rand-sum_dist_dss)/1000, (sum_price_rand-sum_price_dss))
+            <span style=\"float: left;\">Saved Distance: {} km ({}%)</span><br>
+            <span style=\"float: left;\">Saved Cost: {} SEK ({}%)</span><br><br>
+    """.format(sum_dist_rand/1000, sum_price_rand, sum_dist_dss/1000, sum_price_dss, (sum_dist_rand-sum_dist_dss)/1000, (round((1-((sum_dist_dss/1000)/(sum_dist_rand/1000))),2)*100), (sum_price_rand-sum_price_dss), (round((1-((sum_price_dss/1000)/(sum_price_rand/1000))),2)*100))
 
     complete = header + summed_results + table + footer
     print(complete)

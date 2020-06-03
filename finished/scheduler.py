@@ -60,13 +60,13 @@ def plan_schedule(API_key, work_start_time=work_start_time_x, work_end_time=work
                 update_truck_availability(current_time)                   # MAY NEED TO ADD LUNCH FOR DRIVERS HERE SOMEWHERE
                 suggested_route, truck = get_next_truck_group_pair(distance_matrix, time_matrix)
                 if truck != -1:                                           # If a truck is available
-                    schedule += single_truck_scheduler(API_key, suggested_route, truck, current_time, distance_matrix, time_matrix, fuel_price_x)
+                    schedule += single_truck_scheduler(API_key, suggested_route=suggested_route, truck=truck, start_minutes=current_time, distance_matrix=distance_matrix, time_matrix=time_matrix, lunch_duration=lunch_duration, load_time=load_time, unload_time=unload_time, break_time=break_time, current_location=0, home_depot=0, fuel_price_x=fuel_price_x)
             # TAKE THE TRUCK AND SEND IT OFF, PUT AS UNAVAILABLE, SET NEW DEMANDS OF CUSTOMERS
             # WRITE THE ENTIRE SCHEDULE FOR THIS TRUCK FROM START TO FINISH - STORE IT IN "SCHEDULE"
         current_time += load_time
 
     db.init()
-    randomized_schedule = randomizer.plan_random_schedule(distance_matrix_copy, time_matrix, work_start_time, work_end_time, lunch_time, lunch_duration, load_time, unload_time, break_time, fuel_price_x)
+    randomized_schedule = randomizer.plan_random_schedule(distance_matrix=distance_matrix_copy, time_matrix=time_matrix, work_start_time=work_start_time, work_end_time=work_end_time, lunch_time=lunch_time, lunch_duration=lunch_duration, load_time=load_time, unload_time=unload_time, break_time=break_time, fuel_price_x=fuel_price_x)
 
     return schedule, randomized_schedule
 
